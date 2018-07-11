@@ -19,16 +19,22 @@ namespace LINQ_Demo
             emp = new Employee() { Name = "David" };
             lstEmployee.Add(emp);
 
-            var lstFilteredEmployee =  lstEmployee.Where(delegate(Employee argEmp)
-            {
-                return argEmp.Name.StartsWith("S");
-            });
+            var lstFilteredEmployee =  lstEmployee.Where(e=> e.Name.StartsWith("S"));
 
             foreach (var item in lstFilteredEmployee)
             {
                 Console.WriteLine(item.Name);
             }
-            Console.ReadLine();  
+            
+
+            Func<int, int> square = x => x * x;
+            Func<int, int, int> area = (x, y) => x * y;
+            Action<int> print = x => Console.WriteLine(x); 
+
+            Console.WriteLine(square(7));
+            print(area(3,2));
+            Console.ReadLine();
+
         }
 
         private static bool startWithS(Employee emp)
