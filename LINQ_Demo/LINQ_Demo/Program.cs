@@ -11,41 +11,89 @@ namespace LINQ_Demo
         static void Main(string[] args)
         {
 
+            List<Department> lstDeparment = new List<Department>();
+            Department dept = new Department() { DepartmentName = "IT", DepartmentID = 1 };
+            lstDeparment.Add(dept);
+            dept = new Department() { DepartmentName = "HR", DepartmentID = 2 };
+            lstDeparment.Add(dept);
+
+
             List<Employee> lstEmployee = new List<Employee>();
-            Employee emp = new Employee() { Name = "Scott" };
+            Employee emp = new Employee() { EmployeeName = "Scott", DepartmentID = 1 };
             lstEmployee.Add(emp);
-            emp = new Employee() { Name = "Allen" };
+            emp = new Employee() { EmployeeName = "Allen", DepartmentID = 1 };
             lstEmployee.Add(emp);
-            emp = new Employee() { Name = "David" };
+            emp = new Employee() { EmployeeName = "David", DepartmentID = 2 };
             lstEmployee.Add(emp);
 
-            var lstFilteredEmployee =  lstEmployee.Where(e=> e.Name.StartsWith("S"));
-
-            foreach (var item in lstFilteredEmployee)
+            // get employees and their respective department name 
+            var query = from deparment in lstDeparment
+                        join employee in lstEmployee
+                        on deparment.DepartmentID equals employee.DepartmentID
+                        select new { employee.EmployeeName, deparment.DepartmentName };
+            foreach (var item in query)
             {
-                Console.WriteLine(item.Name);
+                Console.WriteLine($"{item.EmployeeName}: {item.DepartmentName}");
             }
-            
 
-            Func<int, int> square = x => x * x;
-            Func<int, int, int> area = (x, y) => x * y;
-            Action<int> print = x => Console.WriteLine(x); 
-
-            Console.WriteLine(square(7));
-            print(area(3,2));
             Console.ReadLine();
 
+            var query1 = from employee in lstEmployee
+                         join department in lstDeparment
+                         on
+                         employee.DepartmentID equals department.DepartmentID
+                         group department by department.DepartmentName;
+
+
+            foreach (var item in query1)
+            {
+                Console.WriteLine($"{item.Key}:{item.Count()}");
+            }
+
+            Console.ReadLine();
+
+            var query2 = lstDeparment.GroupJoin(lstEmployee, d => d.DepartmentID, e => e.DepartmentID, 
+                (department, employee) => 
+                new {
+                    Dept =department ,
+                    Emp = employee
+                });
+
+
+
+            foreach (var results in query2)
+            {
+                Console.WriteLine(results.Dept.DepartmentName);
+                Console.WriteLine("**********************************");
+                foreach (var employee in results.Emp)
+                {
+                    Console.WriteLine(employee.EmployeeName);
+
+                }
+            }
+
+            Console.ReadLine();
+
+            int[] numbers = new int[] { 1, 2, 3, 4 };
+            var result = numbers.Aggregate((a, b) => a + b);
+            Console.WriteLine(result);
+
+            Console.ReadLine();
+
+
         }
 
-        private static bool startWithS(Employee emp)
+        class Employee
         {
-            return emp.Name.StartsWith("S");
+            public int DepartmentID { get; set; }
+            public string EmployeeName { get; set; }
         }
-    }
 
-    class Employee
-    {
-        public string  Name { get; set; }
-    }
+        class Department
+        {
+            public int DepartmentID { get; set; }
+            public string DepartmentName { get; set; }
+        }
 
+    }
 }
